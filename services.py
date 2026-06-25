@@ -7,7 +7,6 @@ bedrock = boto3.client('bedrock-runtime', region_name='us-east-1')
 comprehend = boto3.client('comprehend', region_name='us-east-1')
 
 def extrair_texto_do_documento(arquivo_bytes: bytes):
-
     response = textract.detect_document_text(Document={'Bytes': arquivo_bytes})
     
     texto_completo = ""
@@ -18,7 +17,6 @@ def extrair_texto_do_documento(arquivo_bytes: bytes):
     return texto_completo
 
 def identificar_materia_documento(texto: str):
- 
     if not texto:
         return "Indefinida"
         
@@ -33,7 +31,6 @@ def identificar_materia_documento(texto: str):
     return "Geral"
 
 def gerar_resumo_ai(texto_extraido: str, persona: str = "tutor"):
-  
     try:
         system_prompt = prompts.get_system_prompt(persona)
     except:
@@ -50,18 +47,17 @@ def gerar_resumo_ai(texto_extraido: str, persona: str = "tutor"):
 
     try:
         response = bedrock.invoke_model(
-            modelId="anthropic.claude-3-haiku-20240307-v1:0", 
+            
+            modelId="us.anthropic.claude-opus-4-1-20250805-v1:0", 
             body=body
         )
         response_body = json.loads(response.get('body').read())
         return response_body['content'][0]['text']
     except Exception as e:
-
         print(f"Aviso AWS Bedrock: {str(e)}")
         return f"Resumo gerado (Modo Contingência AWS): O texto aborda conceitos sobre {texto_extraido[:50]}... Identificamos pontos importantes para a sua revisão como {persona}."
 
 def verificar_status_ia():
-
     try:
         body = json.dumps({
             "anthropic_version": "bedrock-2023-05-31",
@@ -70,7 +66,8 @@ def verificar_status_ia():
         })
         
         bedrock.invoke_model(
-            modelId="anthropic.claude-3-haiku-20240307-v1:0", 
+            
+            modelId="us.anthropic.claude-opus-4-1-20250805-v1:0", 
             body=body
         )
         return {"disponivel": True, "mensagem": "🚀 IA Pronta! Cota liberada pela AWS."}
@@ -84,7 +81,6 @@ def verificar_status_ia():
         return {"disponivel": False, "mensagem": f"⚠️ Outro erro: {str(e)}"}
 
 async def processar_documento_completo(file, persona: str):
-
     conteudo_arquivo = await file.read()
     
     # 1. Visão (Textract)

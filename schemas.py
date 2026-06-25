@@ -8,12 +8,10 @@ from typing import Optional
 
 class HistoricoEstudoResponse(BaseModel):
     id: int
-    nome_arquivo: str
-    persona: str
     texto_extraido: str
     materia_detectada: str
     resumo_gerado: str
-    data_criacao: datetime
+    # data_criacao: datetime  (se houver, pode deixar)
 
     class Config:
         from_attributes = True

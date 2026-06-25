@@ -57,3 +57,38 @@ def deletar_usuario(db: Session, usuario_id: int):
         db.commit()
         return True
     return False
+
+# ==========================================
+# CRUD DE HISTÓRICO DE ESTUDOS (Service Layer)
+# ==========================================
+
+def salvar_historico(db: Session, nome_arquivo: str, persona: str, texto_extraido: str, materia_detectada: str, resumo_gerado: str):
+    db_historico = models.HistoricoEstudo( 
+        texto_extraido=texto_extraido,
+        materia_detectada=materia_detectada, # <-- Nome exato do models.py
+        resumo_gerado=resumo_gerado          # <-- Nome exato do models.py
+    )
+    db.add(db_historico)
+    db.commit()
+    db.refresh(db_historico)
+    return db_historico
+
+def obter_historicos(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.HistoricoEstudo).offset(skip).limit(limit).all()
+
+def atualizar_historico_resumo(db: Session, historico_id: int, novo_resumo: str):
+    db_historico = db.query(models.HistoricoEstudo).filter(models.HistoricoEstudo.id == historico_id).first()
+    if db_historico:
+        db_historico.resumo = novo_resumo
+        db.commit()
+        db.refresh(db_historico)
+        return db_historico
+    return None
+
+def deletar_historico(db: Session, historico_id: int):
+    db_historico = db.query(models.HistoricoEstudo).filter(models.HistoricoEstudo.id == historico_id).first()
+    if db_historico:
+        db.delete(db_historico)
+        db.commit()
+        return True
+    return False
